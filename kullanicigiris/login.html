@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş / Kayıt - Hastane Triaj Sistemi</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="./login-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="index.html"><i class="fas fa-hospital"></i> Triaj Sistemi</a></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="#">Hakkımızda</a></li>
+                    <li><a href="#">Triaj Nedir?</a></li>
+                    <li><a href="#">İletişim</a></li>
+                    <li><a href="login.html" class="btn-login active">Giriş Yap</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-type-selector">
+                <button class="type-btn active" id="user-type-btn">Hasta Girişi</button>
+                <button class="type-btn" id="admin-type-btn">Yönetici Girişi</button>
+            </div>
+            
+            <div class="tabs" id="user-tabs">
+                <button class="tab-btn active" id="login-tab">Giriş</button>
+                <button class="tab-btn" id="register-tab">Kayıt</button>
+            </div>
+            
+            <!-- Hasta Giriş Formu -->
+            <div class="form-wrapper active" id="login-wrapper">
+                <form id="login-form">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="login-tc" placeholder="TC Kimlik Numarası" required maxlength="11" pattern="[0-9]{11}">
+                        </div>
+                    </div>
+                    <div class="error-message" id="login-error"></div>
+                    <button type="submit" class="submit-btn">Giriş Yap</button>
+                </form>
+                <div class="form-info">
+                    <p>TC kimlik numaranızı girerek kayıtlı bilgilerinize erişebilirsiniz.</p>
+                </div>
+            </div>
+            
+            <!-- Kayıt Formu -->
+            <div class="form-wrapper" id="register-wrapper">
+                <form id="register-form">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="register-tc" placeholder="TC Kimlik Numarası" required maxlength="11" pattern="[0-9]{11}">
+                        </div>
+                        <div class="input-field">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="register-name" placeholder="Adınız" required>
+                        </div>
+                        <div class="input-field">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="register-surname" placeholder="Soyadınız" required>
+                        </div>
+                        <div class="input-field">
+                            <i class="fas fa-calendar"></i>
+                            <input type="date" id="register-birthdate" required>
+                        </div>
+                    </div>
+                    <div class="error-message" id="register-error"></div>
+                    <button type="submit" class="submit-btn">Kayıt Ol</button>
+                </form>
+                <div class="form-info">
+                    <p>Kayıt olduktan sonra TC kimlik numaranızla giriş yapabilirsiniz.</p>
+                </div>
+            </div>
+            
+            <!-- Admin Giriş Formu -->
+            <div class="form-wrapper" id="admin-wrapper" style="display: none;">
+                <form id="admin-form">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <i class="fas fa-user-shield"></i>
+                            <input type="text" id="admin-tc" placeholder="Yönetici TC Kimlik Numarası" required maxlength="11" pattern="[0-9]{11}">
+                        </div>
+                        <div class="input-field">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="admin-password" placeholder="Şifre" required>
+                        </div>
+                    </div>
+                    <div class="error-message" id="admin-error"></div>
+                    <button type="submit" class="submit-btn">Yönetici Girişi</button>
+                </form>
+                <div class="form-info">
+                    <p>Yalnızca yetkili yöneticiler giriş yapabilir.</p>
+                </div>
+            </div>
+            
+            <div class="welcome-text">
+                <h2>Triaj Sistemine Hoş Geldiniz</h2>
+                <p>Hastane triaj sistemimize giriş yaparak veya kayıt olarak acil servis hizmetlerimizden faydalanabilirsiniz.</p>
+                <div class="animation-container">
+                    <i class="fas fa-heartbeat pulse-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3><i class="fas fa-hospital"></i> Triaj Sistemi</h3>
+                    <p>Acil servis yönetiminde dijital çözüm ortağınız.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Hızlı Bağlantılar</h4>
+                    <ul>
+                        <li><a href="index.html">Ana Sayfa</a></li>
+                        <li><a href="#">Hakkımızda</a></li>
+                        <li><a href="#">Özellikler</a></li>
+                        <li><a href="#">İletişim</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>İletişim</h4>
+                    <p><i class="fas fa-envelope"></i> info@triajsistemi.com</p>
+                    <p><i class="fas fa-phone"></i> +90 212 123 45 67</p>
+                    <p><i class="fas fa-map-marker-alt"></i> İstanbul, Türkiye</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Triaj Sistemi. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./login-script.js"></script>
+</body>
+</html>
