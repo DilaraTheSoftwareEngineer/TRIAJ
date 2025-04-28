@@ -254,7 +254,7 @@
         }
 
         .result-kirmizi.same-area {
-            animation: highlight-kirmizi 1.5s ease-in-out;
+            animation: highlight-kirmizi 2s ease-in-out;
         }
 
         @keyframes highlight-kirmizi {
@@ -281,7 +281,7 @@
         }
 
         .result-sari.same-area {
-            animation: highlight-sari 1.5s ease-in-out;
+            animation: highlight-sari 2s ease-in-out;
         }
 
         @keyframes highlight-sari {
@@ -308,7 +308,7 @@
         }
 
         .result-yesil.same-area {
-            animation: highlight-yesil 1.5s ease-in-out;
+            animation: highlight-yesil 2s ease-in-out;
         }
 
         @keyframes highlight-yesil {
@@ -891,6 +891,27 @@
             return 'yesil';
         }
 
+        // Seçilen hastalıklara göre en yüksek aciliyet seviyesini belirle
+        function determineHighestUrgency() {
+            const selectedDiseases = Array.from(document.querySelectorAll('input[name="disease"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            let highestUrgency = 'yesil';
+            
+            for (const disease of selectedDiseases) {
+                if (triageData[disease]) {
+                    const diseaseUrgency = triageData[disease].level.toLowerCase();
+                    if (diseaseUrgency === 'kırmızı alan') {
+                        return 'kirmizi';
+                    } else if (diseaseUrgency === 'sarı alan' && highestUrgency !== 'kirmizi') {
+                        highestUrgency = 'sari';
+                    }
+                }
+            }
+            
+            return highestUrgency;
+        }
+
         let lastUrgency = null;
 
         // Hastalık seçim limiti kontrolü
@@ -1005,13 +1026,11 @@
                 nextSteps = 'Yapılacaklar: Sıranız geldiğinde değerlendirileceksiniz';
             }
 
-            // Aynı alana yönlendirme kontrolü
-            if (lastUrgency === finalUrgency) {
-                resultContainer.classList.add('same-area');
-                setTimeout(() => {
-                    resultContainer.classList.remove('same-area');
-                }, 1500);
-            }
+            // Her yönlendirmede animasyonu göster
+            resultContainer.classList.add('same-area');
+            setTimeout(() => {
+                resultContainer.classList.remove('same-area');
+            }, 2000);
 
             lastUrgency = finalUrgency;
 
