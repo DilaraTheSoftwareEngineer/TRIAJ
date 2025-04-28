@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hastane Triaj Sistemi - Hastalık Seçimi</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .triage-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .disease-select {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .disease-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.8rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .disease-category {
+            margin-bottom: 1.5rem;
+        }
+
+        .disease-category h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .disease-option {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #fff;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .disease-option:hover {
+            background-color: #f5f5f5;
+            border-color: #4d94ff;
+            transform: translateY(-1px);
+        }
+
+        .disease-option input[type="checkbox"] {
+            margin-right: 12px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #4d94ff;
+        }
+
+        .disease-option input[type="checkbox"]:checked + label {
+            color: #4d94ff;
+            font-weight: 500;
+        }
+
+        .disease-option label {
+            cursor: pointer;
+            flex-grow: 1;
+            font-size: 0.95rem;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+
+        .disease-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #4d94ff, #80b3ff);
+            opacity: 0.5;
+        }
+
+        .disease-option:hover::before {
+            opacity: 1;
+        }
+
+        .search-container {
+            margin: 1.5rem 0;
+            padding: 0 1rem;
+        }
+
+        .disease-search {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .disease-search:focus {
+            border-color: #4d94ff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(77, 148, 255, 0.1);
+        }
+
+        .kirmizi-alan .disease-option {
+            border-left: 4px solid #f44336;
+        }
+
+        .sari-alan .disease-option {
+            border-left: 4px solid #ff9800;
+        }
+
+        .yesil-alan .disease-option {
+            border-left: 4px solid #4caf50;
+        }
+
+        .select2-container--default .select2-selection--single {
+            height: 45px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 8px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 43px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 28px;
+        }
+
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .select2-dropdown {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .select2-results__option {
+            padding: 8px;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #4CAF50;
+        }
+
+        .description-container {
+            margin: 1rem 0;
+        }
+
+        .patient-description {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 60px;
+            max-height: 120px;
+        }
+
+        .evaluate-button {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            background-color: #4d94ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .evaluate-button:hover {
+            background-color: #0066cc;
+        }
+
+        .result-container {
+            margin-top: 2rem;
+            padding: 2rem;
+            border-radius: 10px;
+            display: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .result-container.same-area {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .result-container.highlight {
+            animation: highlight 1.5s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            }
+            25% {
+                box-shadow: 0 0 30px rgba(76, 175, 80, 0.7);
+                background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(76, 175, 80, 0.7);
+                background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
+            }
+            75% {
+                box-shadow: 0 0 30px rgba(76, 175, 80, 0.7);
+                background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            }
+            100% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            }
+        }
+
+        .result-kirmizi.same-area {
+            animation: highlight-kirmizi 1.5s ease-in-out;
+        }
+
+        @keyframes highlight-kirmizi {
+            0% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            }
+            25% {
+                box-shadow: 0 0 30px rgba(244, 67, 54, 0.7);
+                background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(244, 67, 54, 0.7);
+                background: linear-gradient(135deg, #ef9a9a 0%, #e57373 100%);
+            }
+            75% {
+                box-shadow: 0 0 30px rgba(244, 67, 54, 0.7);
+                background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+            }
+            100% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            }
+        }
+
+        .result-sari.same-area {
+            animation: highlight-sari 1.5s ease-in-out;
+        }
+
+        @keyframes highlight-sari {
+            0% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            }
+            25% {
+                box-shadow: 0 0 30px rgba(255, 152, 0, 0.7);
+                background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 152, 0, 0.7);
+                background: linear-gradient(135deg, #ffcc80 0%, #ffb74d 100%);
+            }
+            75% {
+                box-shadow: 0 0 30px rgba(255, 152, 0, 0.7);
+                background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
+            }
+            100% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            }
+        }
+
+        .result-yesil.same-area {
+            animation: highlight-yesil 1.5s ease-in-out;
+        }
+
+        @keyframes highlight-yesil {
+            0% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            }
+            25% {
+                box-shadow: 0 0 30px rgba(76, 175, 80, 0.7);
+                background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(76, 175, 80, 0.7);
+                background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
+            }
+            75% {
+                box-shadow: 0 0 30px rgba(76, 175, 80, 0.7);
+                background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            }
+            100% {
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            }
+        }
+
+        .result-title, .result-description, .result-details {
+            transition: all 0.3s ease;
+        }
+
+        .result-container.same-area .result-title {
+            animation: text-pulse 1.5s ease-in-out;
+        }
+
+        @keyframes text-pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .result-kirmizi {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 8px solid #f44336;
+        }
+
+        .result-sari {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 8px solid #ff9800;
+        }
+
+        .result-yesil {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 8px solid #4caf50;
+        }
+
+        .result-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+
+        .result-kirmizi .result-icon {
+            color: #f44336;
+        }
+
+        .result-sari .result-icon {
+            color: #ff9800;
+        }
+
+        .result-yesil .result-icon {
+            color: #4caf50;
+        }
+
+        .result-content {
+            position: relative;
+            z-index: 1;
+            max-width: 80%;
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-title i {
+            font-size: 1.5rem;
+        }
+
+        .result-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .result-details {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .result-details h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .result-details ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .result-details li {
+            margin: 0.3rem 0;
+            color: #555;
+        }
+
+        @media (max-width: 768px) {
+            .disease-checkboxes {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .disease-checkboxes {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .selection-counter {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        .selection-counter.limit-reached {
+            color: #ff4444;
+            font-weight: 500;
+        }
+
+        .disease-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .disease-option.disabled:hover {
+            transform: none;
+            border-color: #e0e0e0;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-hospital"></i> Triaj Sistemi</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="#">Hakkımızda</a></li>
+                    <li><a href="#">Triaj Nedir?</a></li>
+                    <li><a href="#">İletişim</a></li>
+                    <li><a href="kullanicigiris/login.html" class="btn-login">Giriş Yap</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="triage-container">
+        <h2>Hastalık Seçimi ve Triaj Yönlendirmesi</h2>
+        <p>Lütfen aşağıdaki listeden hastalığınızı seçin ve varsa ek açıklamalarınızı yazın:</p>
+        
+        <div class="search-container">
+            <input type="text" id="diseaseSearch" class="disease-search" placeholder="Hastalık ara...">
+            <div class="selection-counter">Seçilen: <span id="selectedCount">0</span>/10</div>
+        </div>
+        
+        <div class="disease-checkboxes">
+            <div class="disease-option">
+                <input type="checkbox" id="aktif_kanama" name="disease" value="aktif_kanama">
+                <label for="aktif_kanama">Aktif Şiddetli Kanama</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="alerjik_reaksiyon" name="disease" value="alerjik_reaksiyon">
+                <label for="alerjik_reaksiyon">Alerjik Reaksiyon</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="anafilaksi" name="disease" value="anafilaksi">
+                <label for="anafilaksi">Anafilaktik Şok</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="apandisit" name="disease" value="apandisit">
+                <label for="apandisit">Apandisit Şüphesi</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="astim_atak" name="disease" value="astim_atak">
+                <label for="astim_atak">Astım Atağı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="ates_havale" name="disease" value="ates_havale">
+                <label for="ates_havale">Ateşli Havale</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="bas_agrisi" name="disease" value="bas_agrisi">
+                <label for="bas_agrisi">Baş Ağrısı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="beyin_kanamasi" name="disease" value="beyin_kanamasi">
+                <label for="beyin_kanamasi">Beyin Kanaması</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="bogaz_agrisi" name="disease" value="bogaz_agrisi">
+                <label for="bogaz_agrisi">Boğaz Ağrısı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="bobrek_tasi" name="disease" value="bobrek_tasi">
+                <label for="bobrek_tasi">Böbrek Taşı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="ciddi_kafa_travmasi" name="disease" value="ciddi_kafa_travmasi">
+                <label for="ciddi_kafa_travmasi">Ciddi Kafa Travması</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="ciddi_zehirlenme" name="disease" value="ciddi_zehirlenme">
+                <label for="ciddi_zehirlenme">Ciddi Zehirlenme</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="deri_dokuntu" name="disease" value="deri_dokuntu">
+                <label for="deri_dokuntu">Deri Döküntüsü</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="derin_kesik" name="disease" value="derin_kesik">
+                <label for="derin_kesik">Derin Kesik</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="diyabet_komasi" name="disease" value="diyabet_komasi">
+                <label for="diyabet_komasi">Diyabet Koması</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="elektrik_carpması" name="disease" value="elektrik_carpması">
+                <label for="elektrik_carpması">Elektrik Çarpması</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="epilepsi" name="disease" value="epilepsi">
+                <label for="epilepsi">Epilepsi Nöbeti</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="goz_yanmasi" name="disease" value="goz_yanmasi">
+                <label for="goz_yanmasi">Göz Yanması/Batması</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="grip" name="disease" value="grip">
+                <label for="grip">Grip</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="hafif_ates" name="disease" value="hafif_ates">
+                <label for="hafif_ates">Hafif Ateş</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="hafif_travma" name="disease" value="hafif_travma">
+                <label for="hafif_travma">Hafif Travma</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="inme" name="disease" value="inme">
+                <label for="inme">İnme / Felç</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="ishal" name="disease" value="ishal">
+                <label for="ishal">İshal</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="kalp_krizi" name="disease" value="kalp_krizi">
+                <label for="kalp_krizi">Kalp Krizi</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="karin_agrisi" name="disease" value="karin_agrisi">
+                <label for="karin_agrisi">Hafif Karın Ağrısı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="kas_agrisi" name="disease" value="kas_agrisi">
+                <label for="kas_agrisi">Kas Ağrısı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="kulak_agrisi" name="disease" value="kulak_agrisi">
+                <label for="kulak_agrisi">Kulak Ağrısı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="mide_kanamasi" name="disease" value="mide_kanamasi">
+                <label for="mide_kanamasi">Mide Kanaması</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="minör_kesik" name="disease" value="minör_kesik">
+                <label for="minör_kesik">Küçük Kesik/Sıyrık</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="panik_atak" name="disease" value="panik_atak">
+                <label for="panik_atak">Panik Atak</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="safra_kesisi" name="disease" value="safra_kesisi">
+                <label for="safra_kesisi">Safra Kesisi Ağrısı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="siddetli_agri" name="disease" value="siddetli_agri">
+                <label for="siddetli_agri">Şiddetli Ağrı</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="solunum_yetersizligi" name="disease" value="solunum_yetersizligi">
+                <label for="solunum_yetersizligi">Solunum Yetersizliği</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="yanık" name="disease" value="yanık">
+                <label for="yanık">Orta Derece Yanık</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="yuksek_ates" name="disease" value="yuksek_ates">
+                <label for="yuksek_ates">Yüksek Ateş</label>
+            </div>
+            <div class="disease-option">
+                <input type="checkbox" id="zehirli_yilan" name="disease" value="zehirli_yilan">
+                <label for="zehirli_yilan">Zehirli Yılan/Böcek Isırması</label>
+            </div>
+        </div>
+
+        <div class="description-container">
+            <label for="patientDescription">Ek Açıklamalarınız (İsteğe Bağlı):</label>
+            <textarea id="patientDescription" class="patient-description" rows="4" placeholder="Lütfen şikayetlerinizi detaylı bir şekilde açıklayın..."></textarea>
+        </div>
+
+        <button id="evaluateButton" class="evaluate-button">Değerlendir</button>
+
+        <div id="resultContainer" class="result-container">
+            <div class="result-content">
+                <div class="result-title"></div>
+                <div class="result-description"></div>
+                <div class="result-details">
+                    <h4>Yönlendirme Detayları:</h4>
+                    <ul>
+                        <li class="priority-level"></li>
+                        <li class="next-steps"></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="result-icon"></div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#diseaseSelect').select2({
+                placeholder: 'Hastalık Seçiniz',
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "Sonuç bulunamadı";
+                    },
+                    searching: function() {
+                        return "Aranıyor...";
+                    }
+                }
+            });
+        });
+
+        const diseaseSelect = document.getElementById('diseaseSelect');
+        const patientDescription = document.getElementById('patientDescription');
+        const evaluateButton = document.getElementById('evaluateButton');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultTitle = resultContainer.querySelector('.result-title');
+        const resultDescription = resultContainer.querySelector('.result-description');
+
+        const triageData = {
+            // Kırmızı Alan Hastalıkları
+            kalp_krizi: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Kalp krizi şüphesi ile en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            beyin_kanamasi: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Beyin kanaması şüphesi ile en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            solunum_yetersizligi: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Solunum yetersizliği nedeniyle en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            inme: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. İnme/felç şüphesi ile en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            ciddi_kafa_travmasi: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Ciddi kafa travması nedeniyle en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            ates_havale: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Ateşli havale nedeniyle en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            elektrik_carpması: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Elektrik çarpması nedeniyle en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            ciddi_zehirlenme: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Ciddi zehirlenme şüphesi ile en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            anafilaksi: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Anafilaktik şok nedeniyle en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            aktif_kanama: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Aktif şiddetli kanama nedeniyle en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            diyabet_komasi: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Diyabet koması şüphesi ile en yüksek öncelikle tedavi edileceksiniz.'
+            },
+            zehirli_yilan: {
+                level: 'Kırmızı Alan',
+                description: 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. Zehirli yılan/s böcek ısırması nedeniyle en yüksek öncelikle tedavi edileceksiniz.'
+            },
+
+            // Sarı Alan Hastalıkları
+            yuksek_ates: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Yüksek ateş şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            ciddi_travma: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Ciddi travma şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            bayilma: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Bayılma şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            siddetli_agri: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Şiddetli ağrı şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            alerjik_reaksiyon: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Alerjik reaksiyon şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            astim_atak: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Astım atağı şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            derin_kesik: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Derin kesik yaralanmanız için acil serviste değerlendirileceksiniz.'
+            },
+            mide_kanamasi: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Mide kanaması şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            bobrek_tasi: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Böbrek taşı şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            safra_kesisi: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Safra kesisi ağrınız için acil serviste değerlendirileceksiniz.'
+            },
+            apandisit: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Apandisit şüphesi nedeniyle acil serviste değerlendirileceksiniz.'
+            },
+            yanık: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Orta derece yanık yaralanmanız için acil serviste değerlendirileceksiniz.'
+            },
+            epilepsi: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Epilepsi nöbeti şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            panik_atak: {
+                level: 'Sarı Alan',
+                description: 'Acil durum! Panik atak şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+
+            // Yeşil Alan Hastalıkları
+            hafif_travma: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Hafif travma şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            grip: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Grip şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            bas_agrisi: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Baş ağrısı şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            hafif_ates: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Hafif ateş şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            bogaz_agrisi: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Boğaz ağrısı şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            kulak_agrisi: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Kulak ağrısı şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            ishal: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. İshal şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            karin_agrisi: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Hafif karın ağrısı şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            kas_agrisi: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Kas ağrısı şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            minör_kesik: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Küçük kesik/sıyrık için acil serviste değerlendirileceksiniz.'
+            },
+            deri_dokuntu: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Deri döküntüsü şikayetiniz için acil serviste değerlendirileceksiniz.'
+            },
+            goz_yanmasi: {
+                level: 'Yeşil Alan',
+                description: 'Acil olmayan durum. Göz yanması/batması şikayetiniz için acil serviste değerlendirileceksiniz.'
+            }
+        };
+
+        // Aciliyet seviyesini belirleyen anahtar kelimeler
+        const urgencyKeywords = {
+            kirmizi: ['ölüm', 'ölüyorum', 'bayıldım', 'bayılma', 'bilinç kaybı', 'nefes alamıyorum', 'kalp krizi', 'felç', 'kanama', 'şiddetli ağrı', 'çok kötü', 'acil', 'hayati', 'kritik'],
+            sari: ['orta', 'şiddetli', 'kötü', 'acil', 'dikkat', 'önemli', 'ciddi'],
+            yesil: ['hafif', 'az', 'rahatsız', 'basit', 'önemsiz']
+        };
+
+        // Açıklamaya göre aciliyet seviyesini belirle
+        function determineUrgencyFromDescription(description) {
+            description = description.toLowerCase();
+            let maxUrgency = 'yesil';
+            
+            for (const keyword of urgencyKeywords.kirmizi) {
+                if (description.includes(keyword)) {
+                    return 'kirmizi';
+                }
+            }
+            
+            for (const keyword of urgencyKeywords.sari) {
+                if (description.includes(keyword)) {
+                    maxUrgency = 'sari';
+                }
+            }
+            
+            return maxUrgency;
+        }
+
+        // Hastalık ve açıklamaya göre final aciliyet seviyesini belirle
+        function determineFinalUrgency(diseaseUrgency, descriptionUrgency) {
+            if (diseaseUrgency === 'kirmizi' || descriptionUrgency === 'kirmizi') {
+                return 'kirmizi';
+            } else if (diseaseUrgency === 'sari' || descriptionUrgency === 'sari') {
+                return 'sari';
+            }
+            return 'yesil';
+        }
+
+        let lastUrgency = null;
+
+        // Hastalık seçim limiti kontrolü
+        const MAX_SELECTIONS = 10;
+        const selectedCountElement = document.getElementById('selectedCount');
+        const selectionCounter = document.querySelector('.selection-counter');
+
+        function updateSelectionCounter() {
+            const selectedCount = document.querySelectorAll('input[name="disease"]:checked').length;
+            selectedCountElement.textContent = selectedCount;
+            
+            if (selectedCount >= MAX_SELECTIONS) {
+                selectionCounter.classList.add('limit-reached');
+                // Seçili olmayan kutucukları devre dışı bırak
+                document.querySelectorAll('input[name="disease"]:not(:checked)').forEach(checkbox => {
+                    checkbox.disabled = true;
+                    checkbox.closest('.disease-option').classList.add('disabled');
+                });
+            } else {
+                selectionCounter.classList.remove('limit-reached');
+                // Tüm kutucukları aktif et
+                document.querySelectorAll('input[name="disease"]').forEach(checkbox => {
+                    checkbox.disabled = false;
+                    checkbox.closest('.disease-option').classList.remove('disabled');
+                });
+            }
+        }
+
+        // Checkbox değişikliklerini dinle
+        document.querySelectorAll('input[name="disease"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const selectedCount = document.querySelectorAll('input[name="disease"]:checked').length;
+                
+                if (selectedCount > MAX_SELECTIONS) {
+                    this.checked = false;
+                    alert('En fazla 10 hastalık seçebilirsiniz.');
+                    return;
+                }
+                
+                updateSelectionCounter();
+            });
+        });
+
+        // Arama fonksiyonunu güncelle
+        document.getElementById('diseaseSearch').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            const diseaseOptions = document.querySelectorAll('.disease-option');
+            const selectedCount = document.querySelectorAll('input[name="disease"]:checked').length;
+            
+            diseaseOptions.forEach(option => {
+                const label = option.querySelector('label').textContent.toLowerCase();
+                const checkbox = option.querySelector('input[type="checkbox"]');
+                
+                if (label.includes(searchText)) {
+                    option.style.display = 'flex';
+                    // Eğer limit dolmuşsa ve checkbox seçili değilse devre dışı bırak
+                    if (selectedCount >= MAX_SELECTIONS && !checkbox.checked) {
+                        checkbox.disabled = true;
+                        option.classList.add('disabled');
+                    }
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+
+        // Sayfa yüklendiğinde sayaç güncelle
+        document.addEventListener('DOMContentLoaded', updateSelectionCounter);
+
+        evaluateButton.addEventListener('click', function() {
+            const selectedDiseases = Array.from(document.querySelectorAll('input[name="disease"]:checked'))
+                .map(checkbox => checkbox.value);
+            const description = patientDescription.value;
+            
+            if (selectedDiseases.length === 0) {
+                alert('Lütfen en az bir hastalık seçiniz!');
+                return;
+            }
+
+            const highestUrgency = determineHighestUrgency();
+            const descriptionUrgency = determineUrgencyFromDescription(description);
+            const finalUrgency = determineFinalUrgency(highestUrgency, descriptionUrgency);
+            
+            resultContainer.style.display = 'block';
+            resultContainer.className = 'result-container';
+            
+            let finalLevel, finalDescription, icon, priorityLevel, nextSteps;
+            
+            if (finalUrgency === 'kirmizi') {
+                resultContainer.classList.add('result-kirmizi');
+                finalLevel = 'Kırmızı Alan';
+                icon = 'fa-heartbeat';
+                finalDescription = 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. ' + 
+                                 (description ? 'Açıklamanızdaki belirtiler de ciddi bir duruma işaret ediyor.' : '');
+                priorityLevel = 'Öncelik seviyesi: En yüksek öncelik';
+                nextSteps = 'Yapılacaklar: Hemen acil servis ekibi tarafından değerlendirileceksiniz';
+            } else if (finalUrgency === 'sari') {
+                resultContainer.classList.add('result-sari');
+                finalLevel = 'Sarı Alan';
+                icon = 'fa-clock';
+                finalDescription = 'Acil durum! Acil serviste değerlendirileceksiniz. ' +
+                                 (description ? 'Açıklamanızdaki belirtiler acil müdahale gerektiriyor.' : '');
+                priorityLevel = 'Öncelik seviyesi: Yüksek öncelik';
+                nextSteps = 'Yapılacaklar: Acil servis ekibi tarafından değerlendirileceksiniz';
+            } else {
+                resultContainer.classList.add('result-yesil');
+                finalLevel = 'Yeşil Alan';
+                icon = 'fa-notes-medical';
+                finalDescription = 'Acil olmayan durum. Acil serviste değerlendirileceksiniz. ' +
+                                 (description ? 'Açıklamanızdaki belirtiler acil olmayan bir duruma işaret ediyor.' : '');
+                priorityLevel = 'Öncelik seviyesi: Normal öncelik';
+                nextSteps = 'Yapılacaklar: Sıranız geldiğinde değerlendirileceksiniz';
+            }
+
+            // Aynı alana yönlendirme kontrolü
+            if (lastUrgency === finalUrgency) {
+                resultContainer.classList.add('same-area');
+                setTimeout(() => {
+                    resultContainer.classList.remove('same-area');
+                }, 1500);
+            }
+
+            lastUrgency = finalUrgency;
+
+            resultTitle.innerHTML = `<i class="fas ${icon}"></i> Yönlendirileceğiniz Alan: ${finalLevel}`;
+            resultDescription.textContent = finalDescription;
+            resultContainer.querySelector('.priority-level').textContent = priorityLevel;
+            resultContainer.querySelector('.next-steps').textContent = nextSteps;
+            resultContainer.querySelector('.result-icon').innerHTML = `<i class="fas ${icon}"></i>`;
+        });
+    </script>
+</body>
+</html> 
