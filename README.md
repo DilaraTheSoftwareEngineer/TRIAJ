@@ -13,7 +13,7 @@ Bu proje, hastanelerde acil servislerde kullanılmak üzere tasarlanmış bir tr
 ## Varsayılan Kullanıcılar
 
 ### Admin Giriş Bilgileri
-- TC Kimlik: 11111111111
+- TC Kimlik: 30534748970
 - Şifre: admin123
 
 ## Sistem Özellikleri
