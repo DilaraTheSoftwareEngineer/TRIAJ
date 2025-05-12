@@ -8,6 +8,84 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: #4d94ff;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: #4d94ff;
+        }
+
+        .btn-login {
+            background-color: #4d94ff;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #0066cc;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+        }
+
         .triage-container {
             max-width: 800px;
             margin: 2rem auto;
@@ -23,25 +101,16 @@
         }
 
         .disease-checkboxes {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             padding: 1.5rem;
             margin: 1rem 0;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .disease-category {
-            margin-bottom: 1.5rem;
-        }
-
-        .disease-category h3 {
-            color: #333;
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #eee;
+            max-height: 500px;
+            overflow-y: auto;
         }
 
         .disease-option {
@@ -54,6 +123,7 @@
             transition: all 0.2s ease;
             cursor: pointer;
             position: relative;
+            width: 100%;
         }
 
         .disease-option:hover {
@@ -63,9 +133,9 @@
         }
 
         .disease-option input[type="checkbox"] {
-            margin-right: 12px;
-            width: 16px;
-            height: 16px;
+            margin-right: 15px;
+            width: 22px;
+            height: 22px;
             cursor: pointer;
             accent-color: #4d94ff;
         }
@@ -78,7 +148,7 @@
         .disease-option label {
             cursor: pointer;
             flex-grow: 1;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #333;
             transition: all 0.2s ease;
         }
@@ -105,12 +175,12 @@
 
         .disease-search {
             width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             font-size: 1rem;
             background-color: #fff;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
 
         .disease-search:focus {
@@ -491,6 +561,7 @@
     </header>
 
     <div class="triage-container">
+    <form id="triageForm">
         <h2>Hastalık Seçimi ve Triaj Yönlendirmesi</h2>
         <p>Lütfen aşağıdaki listeden hastalığınızı seçin ve varsa ek açıklamalarınızı yazın:</p>
         
@@ -651,7 +722,8 @@
             <textarea id="patientDescription" class="patient-description" rows="4" placeholder="Lütfen şikayetlerinizi detaylı bir şekilde açıklayın..."></textarea>
         </div>
 
-        <button id="evaluateButton" class="evaluate-button">Değerlendir</button>
+        <button type="submit" id="evaluateButton" class="evaluate-button">Değerlendir</button>
+    </form>
 
         <div id="resultContainer" class="result-container">
             <div class="result-content">
@@ -672,27 +744,129 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#diseaseSelect').select2({
-                placeholder: 'Hastalık Seçiniz',
-                allowClear: true,
-                language: {
-                    noResults: function() {
-                        return "Sonuç bulunamadı";
-                    },
-                    searching: function() {
-                        return "Aranıyor...";
-                    }
-                }
-            });
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const evaluateButton = document.querySelector('.evaluate-button');
+            const resultContainer = document.querySelector('.result-container');
+            const patientDescription = document.querySelector('.patient-description');
+            const resultTitle = document.querySelector('.result-title');
+            const resultDescription = document.querySelector('.result-description');
 
-        const diseaseSelect = document.getElementById('diseaseSelect');
-        const patientDescription = document.getElementById('patientDescription');
-        const evaluateButton = document.getElementById('evaluateButton');
-        const resultContainer = document.getElementById('resultContainer');
-        const resultTitle = resultContainer.querySelector('.result-title');
-        const resultDescription = resultContainer.querySelector('.result-description');
+            evaluateButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const selectedDiseases = Array.from(document.querySelectorAll('input[name="disease"]:checked'))
+                    .map(checkbox => checkbox.value);
+                const description = patientDescription ? patientDescription.value : '';
+                
+                if (selectedDiseases.length === 0) {
+                    alert('Lütfen en az bir hastalık seçiniz!');
+                    return;
+                }
+
+                const highestUrgency = determineHighestUrgency();
+                const descriptionUrgency = determineUrgencyFromDescription(description);
+                const finalUrgency = determineFinalUrgency(highestUrgency, descriptionUrgency);
+                
+                // Verileri hazırla
+                const formData = new FormData();
+                formData.append('diseases', JSON.stringify(selectedDiseases));
+                formData.append('description', description);
+                formData.append('urgencyLevel', finalUrgency);
+
+                // Debug için konsola yazdır
+                console.log('Gönderilen veriler:', {
+                    diseases: selectedDiseases,
+                    description: description,
+                    urgencyLevel: finalUrgency
+                });
+
+                // Veritabanına kaydet
+                fetch('save_complaint.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    console.log('Sunucu yanıtı:', response);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('İşlenmiş yanıt:', data);
+                    if (data.success) {
+                        alert('Şikayetiniz başarıyla kaydedildi!');
+                        console.log('Kayıt başarılı:', data);
+                        showResult(finalUrgency, selectedDiseases);
+                    } else {
+                        alert('Kayıt sırasında bir hata oluştu: ' + data.message);
+                        console.error('Kayıt hatası:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Bağlantı hatası detayları:', error);
+                    alert('Bağlantı hatası oluştu! Lütfen daha sonra tekrar deneyin. Hata: ' + error.message);
+                });
+            });
+
+            // Aciliyet seviyesini belirle
+            function determineUrgencyLevel(diseases) {
+                const kirmiziHastaliklar = ['aktif_kanama', 'anafilaksi', 'beyin_kanamasi', 'ciddi_kafa_travmasi', 'ciddi_zehirlenme', 'diyabet_komasi', 'elektrik_carpması'];
+                const sariHastaliklar = ['alerjik_reaksiyon', 'apandisit', 'astim_atak', 'ates_havale', 'bobrek_tasi', 'derin_kesik', 'epilepsi'];
+                
+                for (let disease of diseases) {
+                    if (kirmiziHastaliklar.includes(disease)) return 'kirmizi';
+                }
+                for (let disease of diseases) {
+                    if (sariHastaliklar.includes(disease)) return 'sari';
+                }
+                return 'yesil';
+            }
+
+            // Sonucu göster
+            function showResult(urgencyLevel, selectedDiseases) {
+                const resultContainer = document.querySelector('.result-container');
+                if (!resultContainer) return;
+
+                resultContainer.className = 'result-container';
+                resultContainer.classList.add(`result-${urgencyLevel}`);
+
+                let title, description, icon;
+                switch(urgencyLevel) {
+                    case 'kirmizi':
+                        title = 'Kırmızı Alan - Acil Müdahale';
+                        description = 'Durumunuz acil müdahale gerektiriyor. Lütfen beklemeden acil servise başvurun.';
+                        icon = 'fa-exclamation-triangle';
+                        break;
+                    case 'sari':
+                        title = 'Sarı Alan - Öncelikli Hasta';
+                        description = 'Durumunuz öncelikli değerlendirilmesi gereken bir vaka. Acil servise başvurunuz önerilir.';
+                        icon = 'fa-exclamation-circle';
+                        break;
+                    default:
+                        title = 'Yeşil Alan - Normal Başvuru';
+                        description = 'Durumunuz acil müdahale gerektirmiyor. Normal poliklinik başvurusu yapabilirsiniz.';
+                        icon = 'fa-check-circle';
+                }
+
+                resultContainer.innerHTML = `
+                    <div class="result-content">
+                        <h3 class="result-title"><i class="fas ${icon}"></i> ${title}</h3>
+                        <p class="result-description">${description}</p>
+                        <div class="result-details">
+                            <h4>Seçilen Şikayetler:</h4>
+                            <ul>
+                                ${selectedDiseases.map(disease => `<li>${document.querySelector(`label[for="${disease}"]`).textContent}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    <i class="fas ${icon} result-icon"></i>
+                `;
+
+                resultContainer.style.display = 'block';
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
 
         const triageData = {
             // Kırmızı Alan Hastalıkları
@@ -981,7 +1155,9 @@
         // Sayfa yüklendiğinde sayaç güncelle
         document.addEventListener('DOMContentLoaded', updateSelectionCounter);
 
-        evaluateButton.addEventListener('click', function() {
+        document.getElementById('triageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             const selectedDiseases = Array.from(document.querySelectorAll('input[name="disease"]:checked'))
                 .map(checkbox => checkbox.value);
             const description = patientDescription.value;
@@ -994,6 +1170,32 @@
             const highestUrgency = determineHighestUrgency();
             const descriptionUrgency = determineUrgencyFromDescription(description);
             const finalUrgency = determineFinalUrgency(highestUrgency, descriptionUrgency);
+            
+            // Veritabanına kaydet
+            const formData = new FormData();
+            formData.append('diseases', JSON.stringify(selectedDiseases));
+            formData.append('description', description);
+            formData.append('urgencyLevel', finalUrgency);
+
+            fetch('save_complaint.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Şikayetiniz başarıyla kaydedildi!');
+                    console.log('Kayıt başarılı:', data);
+                    showResult(finalUrgency, selectedDiseases);
+                } else {
+                    alert('Kayıt sırasında bir hata oluştu: ' + data.message);
+                    console.error('Kayıt hatası:', data.message);
+                }
+            })
+            .catch(error => {
+                alert('Bağlantı hatası oluştu!');
+                console.error('Bağlantı hatası:', error);
+            });
             
             resultContainer.style.display = 'block';
             resultContainer.className = 'result-container';
@@ -1042,4 +1244,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

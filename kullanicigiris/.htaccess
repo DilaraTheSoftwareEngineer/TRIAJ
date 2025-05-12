@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# Admin dizinine doğrudan erişimi engelle
+RewriteCond %{REQUEST_URI} ^/triajGuncellenmis/kullanicigiris/admin/admin\.html$
+RewriteCond %{HTTP_REFERER} !^http://localhost/triajGuncellenmis/kullanicigiris/admin-login\.php
+RewriteRule ^ /triajGuncellenmis/kullanicigiris/admin-login.php [R,L]
+
+# Admin dashboard'a yönlendirme
+RewriteCond %{REQUEST_URI} ^/triajGuncellenmis/kullanicigiris/admin/dashboard\.php$
+RewriteCond %{HTTP_REFERER} !^http://localhost/triajGuncellenmis/kullanicigiris/admin-login\.php
+RewriteRule ^ /triajGuncellenmis/kullanicigiris/admin-login.php [R,L] 

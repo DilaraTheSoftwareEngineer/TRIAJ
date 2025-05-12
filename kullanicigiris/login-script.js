@@ -35,8 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // LocalStorage'dan kullanıcı verilerini al
     let users = JSON.parse(localStorage.getItem('triajUsers')) || [];
     
-    // LocalStorage kodunu kaldırdık
-    
     // Giriş formu gönderildiğinde
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -63,10 +61,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginError.textContent = '';
                 loginSuccess();
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = '../sikayetformu/triage.html';
                 }, 1500);
             } else {
-                loginError.textContent = data.error;
+                // Veritabanında bulunamadı, localStorage kontrolü yap
+                const localUser = users.find(user => user.tc === tcNumber);
+                if (localUser) {
+                    loginError.textContent = '';
+                    loginSuccess();
+                    setTimeout(() => {
+                        window.location.href = '../sikayetformu/triage.html';
+                    }, 1500);
+                } else {
+                    loginError.textContent = data.error || 'Kullanıcı bulunamadı!';
+                }
             }
         })
         .catch(error => {
@@ -89,63 +97,37 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // LocalStorage'a kaydet
-        const users = JSON.parse(localStorage.getItem('triajUsers')) || [];
+        // Form verilerini oluştur
+        const formData = new FormData();
+        formData.append('tc', tcNumber);
+        formData.append('name', name);
+        formData.append('surname', surname);
+        formData.append('birthdate', birthdate);
         
-        // TC numarası zaten kayıtlı mı kontrol et
-        const existingUser = users.find(user => user.tc === tcNumber);
-        if (existingUser) {
-            registerError.textContent = 'Bu TC kimlik numarası zaten kayıtlı!';
-            return;
-        }
-        
-        // Yeni kullanıcıyı ekle
-        users.push({
-            tc: tcNumber,
-            name: name,
-            surname: surname,
-            birthdate: birthdate
+        // PHP backend'e gönder
+        fetch('register.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                registerError.textContent = '';
+                registerSuccess();
+                setTimeout(() => {
+                    loginTab.click();
+                    registerForm.reset();
+                }, 1500);
+            } else {
+                registerError.textContent = data.error || 'Kayıt işlemi başarısız';
+            }
+        })
+        .catch(error => {
+            registerError.textContent = 'Bir hata oluştu, lütfen tekrar deneyin';
+            console.error('Error:', error);
         });
-        
-        localStorage.setItem('triajUsers', JSON.stringify(users));
-        
-        registerError.textContent = '';
-        registerSuccess();
-        setTimeout(() => {
-            loginTab.click();
-            registerForm.reset();
-        }, 1500);
     });
     
-    // Giriş formu gönderildiğinde
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const tcNumber = document.getElementById('login-tc').value;
-        
-        // TC kimlik numarası kontrolü
-        if (!validateTCNumber(tcNumber)) {
-            loginError.textContent = 'Geçerli bir TC kimlik numarası giriniz (11 haneli)';
-            return;
-        }
-        
-        // LocalStorage'dan kullanıcıları al
-        const users = JSON.parse(localStorage.getItem('triajUsers')) || [];
-        
-        // Kullanıcıyı bul
-        const user = users.find(user => user.tc === tcNumber);
-        if (user) {
-            loginError.textContent = '';
-            loginSuccess();
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1500);
-        } else {
-            loginError.textContent = 'Kullanıcı bulunamadı!';
-        }
-    });
-    
-    // TC Kimlik numarası doğrulama
     // TC Kimlik numarası doğrulama
     function validateTCNumber(tcNumber) {
         // 11 haneli olmalı ve sadece rakamlardan oluşmalı
@@ -200,22 +182,18 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
     
-    // Başarılı giriş animasyonu
+    // Login başarılı animasyonu
     function loginSuccess() {
-        const successMessage = document.createElement('div');
-        successMessage.className = 'success-message';
-        successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Giriş başarılı! Yönlendiriliyorsunuz...';
-        loginWrapper.appendChild(successMessage);
-        setTimeout(() => successMessage.style.opacity = '1', 10);
+        const loginBtn = loginForm.querySelector('button');
+        loginBtn.innerHTML = '<i class="fas fa-check"></i> Giriş Başarılı';
+        loginBtn.style.backgroundColor = '#4CAF50';
     }
     
-    // Başarılı kayıt animasyonu
+    // Register başarılı animasyonu
     function registerSuccess() {
-        const successMessage = document.createElement('div');
-        successMessage.className = 'success-message';
-        successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Kayıt başarılı! Giriş yapabilirsiniz.';
-        registerWrapper.appendChild(successMessage);
-        setTimeout(() => successMessage.style.opacity = '1', 10);
+        const registerBtn = registerForm.querySelector('button');
+        registerBtn.innerHTML = '<i class="fas fa-check"></i> Kayıt Başarılı';
+        registerBtn.style.backgroundColor = '#4CAF50';
     }
     
     // Navbar scroll efekti
@@ -266,24 +244,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 50);
     });
     
-    // Başarılı giriş animasyonu
-    function loginSuccess() {
-        const successMessage = document.createElement('div');
-        successMessage.className = 'success-message';
-        successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Giriş başarılı! Yönlendiriliyorsunuz...';
-        loginWrapper.appendChild(successMessage);
-        setTimeout(() => successMessage.style.opacity = '1', 10);
-    }
-    
-    // Başarılı kayıt animasyonu
-    function registerSuccess() {
-        const successMessage = document.createElement('div');
-        successMessage.className = 'success-message';
-        successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Kayıt başarılı! Giriş yapabilirsiniz.';
-        registerWrapper.appendChild(successMessage);
-        setTimeout(() => successMessage.style.opacity = '1', 10);
-    }
-    
     // Form içeriklerini sıfırla fonksiyonu
     function resetForms() {
         document.getElementById('register-form').reset();
@@ -309,25 +269,54 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // LocalStorage'dan admin hesaplarını al
-        const adminAccounts = JSON.parse(localStorage.getItem('triajAdmins')) || [];
+        // Buton durumunu güncelle
+        const adminBtn = adminForm.querySelector('button');
+        adminBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Giriş yapılıyor...';
+        adminBtn.disabled = true;
         
-        // Admin hesabını bul
-        const admin = adminAccounts.find(admin => admin.tc === tcNumber && admin.password === password);
+        // Form verilerini oluştur
+        const formData = new FormData();
+        formData.append('tc', tcNumber);
+        formData.append('password', password);
         
-        if (admin) {
-            adminError.textContent = '';
-            const successMessage = document.createElement('div');
-            successMessage.className = 'success-message';
-            successMessage.innerHTML = '<i class="fas fa-check-circle"></i> Yönetici girişi başarılı! Yönlendiriliyorsunuz...';
-            adminWrapper.appendChild(successMessage);
-            setTimeout(() => successMessage.style.opacity = '1', 10);
-            setTimeout(() => {
-                window.location.href = 'admin/admin.html';
-            }, 1500);
-        } else {
-            adminError.textContent = 'TC Kimlik numarası veya şifre hatalı!';
-        }
+        console.log('Admin giriş isteği gönderiliyor:', tcNumber);
+        
+        // PHP backend'e gönder - doğrudan admin-login.php'ye relatif URL ile istek yapılıyor
+        fetch('admin-login.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'same-origin' // Session cookie'lerini gönder
+        })
+        .then(response => {
+            console.log('Yanıt durumu:', response.status, response.statusText);
+            if (!response.ok) {
+                throw new Error('Sunucu yanıtı başarısız: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Sunucu yanıtı:', data);
+            if (data.success) {
+                console.log('Admin girişi başarılı, yönlendiriliyor...');
+                adminError.textContent = '';
+                adminBtn.innerHTML = '<i class="fas fa-check"></i> Giriş Başarılı';
+                adminBtn.style.backgroundColor = '#4CAF50';
+                
+                setTimeout(() => {
+                    window.location.href = '../kullanicigiris/admin/dashboard.php';
+                }, 1000);
+            } else {
+                adminError.textContent = data.error || 'TC Kimlik veya şifre hatalı!';
+                adminBtn.innerHTML = 'Yönetici Girişi';
+                adminBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Giriş hatası:', error);
+            adminError.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+            adminBtn.innerHTML = 'Yönetici Girişi';
+            adminBtn.disabled = false;
+        });
     });
 }); // DOMContentLoaded kapanış
     

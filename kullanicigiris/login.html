@@ -12,11 +12,11 @@
     <header>
         <div class="container">
             <div class="logo">
-                <h1><a href="index.html"><i class="fas fa-hospital"></i> Triaj Sistemi</a></h1>
+                <h1><a href="../index.html"><i class="fas fa-hospital"></i> Triaj Sistemi</a></h1>
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html">Ana Sayfa</a></li>
+                    <li><a href="../index.html">Ana Sayfa</a></li>
                     <li><a href="#">Hakkımızda</a></li>
                     <li><a href="#">Triaj Nedir?</a></li>
                     <li><a href="#">İletişim</a></li>
@@ -125,7 +125,7 @@
                 <div class="footer-links">
                     <h4>Hızlı Bağlantılar</h4>
                     <ul>
-                        <li><a href="index.html">Ana Sayfa</a></li>
+                        <li><a href="../index.html">Ana Sayfa</a></li>
                         <li><a href="#">Hakkımızda</a></li>
                         <li><a href="#">Özellikler</a></li>
                         <li><a href="#">İletişim</a></li>
@@ -145,5 +145,12 @@
     </footer>
 
     <script src="./login-script.js"></script>
+    <script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Form verisi login-script.js içinde işleniyor, ek bir işlem yapmayın
+        // window.location.href = '../sikayetformu/triage.html'; satırını kaldırıyoruz
+    });
+    </script>
 </body>
 </html>
