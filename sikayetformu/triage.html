@@ -785,27 +785,22 @@
                     method: 'POST',
                     body: formData
                 })
-                .then(response => {
-                    console.log('Sunucu yanıtı:', response);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log('İşlenmiş yanıt:', data);
                     if (data.success) {
-                        alert('Şikayetiniz başarıyla kaydedildi!');
                         console.log('Kayıt başarılı:', data);
-                        showResult(finalUrgency, selectedDiseases);
+                        
+                        // Doğrudan sonuç sayfasına yönlendir
+                        const redirectURL = `triaj_sonuc.html?level=${finalUrgency}&diseases=${encodeURIComponent(JSON.stringify(selectedDiseases))}&description=${encodeURIComponent(description)}`;
+                        window.location.href = redirectURL;
                     } else {
                         alert('Kayıt sırasında bir hata oluştu: ' + data.message);
                         console.error('Kayıt hatası:', data.message);
                     }
                 })
                 .catch(error => {
-                    console.error('Bağlantı hatası detayları:', error);
-                    alert('Bağlantı hatası oluştu! Lütfen daha sonra tekrar deneyin. Hata: ' + error.message);
+                    alert('Bağlantı hatası oluştu!');
+                    console.error('Bağlantı hatası:', error);
                 });
             });
 
@@ -1155,6 +1150,7 @@
         // Sayfa yüklendiğinde sayaç güncelle
         document.addEventListener('DOMContentLoaded', updateSelectionCounter);
 
+        // Form submit işlemi
         document.getElementById('triageForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -1184,9 +1180,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Şikayetiniz başarıyla kaydedildi!');
                     console.log('Kayıt başarılı:', data);
-                    showResult(finalUrgency, selectedDiseases);
+                    
+                    // Doğrudan sonuç sayfasına yönlendir
+                    const redirectURL = `triaj_sonuc.html?level=${finalUrgency}&diseases=${encodeURIComponent(JSON.stringify(selectedDiseases))}&description=${encodeURIComponent(description)}`;
+                    window.location.href = redirectURL;
                 } else {
                     alert('Kayıt sırasında bir hata oluştu: ' + data.message);
                     console.error('Kayıt hatası:', data.message);
@@ -1196,51 +1194,6 @@
                 alert('Bağlantı hatası oluştu!');
                 console.error('Bağlantı hatası:', error);
             });
-            
-            resultContainer.style.display = 'block';
-            resultContainer.className = 'result-container';
-            
-            let finalLevel, finalDescription, icon, priorityLevel, nextSteps;
-            
-            if (finalUrgency === 'kirmizi') {
-                resultContainer.classList.add('result-kirmizi');
-                finalLevel = 'Kırmızı Alan';
-                icon = 'fa-heartbeat';
-                finalDescription = 'Hayati tehlike! Hemen acil servise yönlendirileceksiniz. ' + 
-                                 (description ? 'Açıklamanızdaki belirtiler de ciddi bir duruma işaret ediyor.' : '');
-                priorityLevel = 'Öncelik seviyesi: En yüksek öncelik';
-                nextSteps = 'Yapılacaklar: Hemen acil servis ekibi tarafından değerlendirileceksiniz';
-            } else if (finalUrgency === 'sari') {
-                resultContainer.classList.add('result-sari');
-                finalLevel = 'Sarı Alan';
-                icon = 'fa-clock';
-                finalDescription = 'Acil durum! Acil serviste değerlendirileceksiniz. ' +
-                                 (description ? 'Açıklamanızdaki belirtiler acil müdahale gerektiriyor.' : '');
-                priorityLevel = 'Öncelik seviyesi: Yüksek öncelik';
-                nextSteps = 'Yapılacaklar: Acil servis ekibi tarafından değerlendirileceksiniz';
-            } else {
-                resultContainer.classList.add('result-yesil');
-                finalLevel = 'Yeşil Alan';
-                icon = 'fa-notes-medical';
-                finalDescription = 'Acil olmayan durum. Acil serviste değerlendirileceksiniz. ' +
-                                 (description ? 'Açıklamanızdaki belirtiler acil olmayan bir duruma işaret ediyor.' : '');
-                priorityLevel = 'Öncelik seviyesi: Normal öncelik';
-                nextSteps = 'Yapılacaklar: Sıranız geldiğinde değerlendirileceksiniz';
-            }
-
-            // Her yönlendirmede animasyonu göster
-            resultContainer.classList.add('same-area');
-            setTimeout(() => {
-                resultContainer.classList.remove('same-area');
-            }, 2000);
-
-            lastUrgency = finalUrgency;
-
-            resultTitle.innerHTML = `<i class="fas ${icon}"></i> Yönlendirileceğiniz Alan: ${finalLevel}`;
-            resultDescription.textContent = finalDescription;
-            resultContainer.querySelector('.priority-level').textContent = priorityLevel;
-            resultContainer.querySelector('.next-steps').textContent = nextSteps;
-            resultContainer.querySelector('.result-icon').innerHTML = `<i class="fas ${icon}"></i>`;
         });
     </script>
 </body>

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hastane Triaj Sistemi - Sonuç</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #4d94ff, #80b3ff, #4d94ff);
+            background-size: 200% 100%;
+            animation: gradient-animation 5s ease infinite;
+        }
+        
+        @keyframes gradient-animation {
+            0% {background-position: 0% 50%}
+            50% {background-position: 100% 50%}
+            100% {background-position: 0% 50%}
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: #4d94ff;
+            font-size: 1.5em;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        nav a:hover {
+            color: #fff;
+            background-color: #4d94ff;
+        }
+
+        .btn-login {
+            background-color: #4d94ff;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #0066cc;
+        }
+
+        .result-page {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+            font-size: 1.8rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #4d94ff, #80b3ff);
+        }
+
+        .result-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .result-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+        }
+
+        .result-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kirmizi-header {
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-bottom: 3px solid #f44336;
+        }
+
+        .sari-header {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-bottom: 3px solid #ff9800;
+        }
+
+        .yesil-header {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-bottom: 3px solid #4caf50;
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-time {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-time i {
+            color: #555;
+        }
+
+        .result-body {
+            padding: 2rem;
+        }
+
+        .result-summary {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            color: #444;
+        }
+
+        .diseases-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .disease-item {
+            padding: 0.8rem 1rem;
+            background-color: #fff;
+            border-radius: 6px;
+            border-left: 4px solid #4d94ff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .kirmizi-disease {
+            border-left-color: #f44336;
+        }
+
+        .sari-disease {
+            border-left-color: #ff9800;
+        }
+
+        .yesil-disease {
+            border-left-color: #4caf50;
+        }
+
+        .disease-item i {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        .patient-description {
+            font-style: italic;
+            padding: 1.2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            border-left: 4px solid #4d94ff;
+            margin-bottom: 1rem;
+        }
+
+        .urgency-level {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .kirmizi-text {
+            color: #d32f2f;
+        }
+
+        .sari-text {
+            color: #f57c00;
+        }
+
+        .yesil-text {
+            color: #388e3c;
+        }
+
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .btn i {
+            font-size: 1.1em;
+        }
+
+        .btn-primary {
+            background-color: #4d94ff;
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0066cc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .expected-wait {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .wait-icon {
+            font-size: 2rem;
+            color: #4d94ff;
+        }
+
+        .wait-details {
+            flex: 1;
+        }
+
+        .wait-details h4 {
+            margin: 0 0 0.3rem 0;
+            font-size: 1rem;
+        }
+
+        .wait-details p {
+            margin: 0;
+            color: #666;
+        }
+
+        .wait-time {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .next-steps {
+            margin-top: 2rem;
+            background-color: #e8f4fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .next-steps h3 {
+            margin-top: 0;
+            color: #0066cc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .next-steps ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .next-steps li {
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .print-button {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                background-color: white;
+            }
+            
+            .result-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+                margin-top: 1rem;
+            }
+            
+            .result-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .diseases-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="no-print">
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-hospital"></i> Hastane Triaj Sistemi</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../index.html"><i class="fas fa-home"></i> Ana Sayfa</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="result-page">
+        <h1 class="page-title">Triaj Değerlendirme Sonucu</h1>
+        
+        <div class="result-card">
+            <div class="result-header" id="headerArea">
+                <h2 class="result-title" id="resultTitle"><i class="fas fa-spinner fa-spin"></i> Triaj Sonucu Yükleniyor...</h2>
+                <div class="result-time">
+                    <i class="fas fa-calendar-alt"></i> <span id="currentDate">-</span>
+                </div>
+            </div>
+
+            <div class="result-body">
+                <div class="result-summary" id="resultSummary">
+                    Triaj değerlendirmeniz yükleniyor...
+                </div>
+
+                <div class="info-box">
+                    <h3><i class="fas fa-notes-medical"></i> Belirlediğiniz Şikayetler</h3>
+                    <ul class="diseases-list" id="diseasesList">
+                        <li class="disease-item"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</li>
+                    </ul>
+                </div>
+
+                <div class="info-box" id="descriptionBox">
+                    <h3><i class="fas fa-comment-medical"></i> Ek Açıklamalarınız</h3>
+                    <div class="patient-description" id="patientDescription">
+                        Yükleniyor...
+                    </div>
+                </div>
+                
+                <div class="urgency-level" id="urgencyLevel">
+                    <i class="fas fa-spinner fa-spin"></i> Aciliyet seviyesi hesaplanıyor...
+                </div>
+
+                <div class="expected-wait" id="waitTimeContainer">
+                    <div class="wait-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="wait-details">
+                        <h4>Tahmini Bekleme Süresi</h4>
+                        <p id="waitTimeDescription">Triaj seviyenize göre tahmini bekleme süresi hesaplanıyor...</p>
+                    </div>
+                    <div class="wait-time" id="waitTime">--</div>
+                </div>
+
+                <div class="next-steps">
+                    <h3><i class="fas fa-clipboard-list"></i> Sonraki Adımlar</h3>
+                    <ul id="nextStepsList">
+                        <li>Triaj sonucunuza göre sonraki adımlar yükleniyor...</li>
+                    </ul>
+                </div>
+
+                <div class="print-button no-print">
+                    <button onclick="window.print()" class="btn btn-secondary">
+                        <i class="fas fa-print"></i> Yazdır
+                    </button>
+                </div>
+
+                <div class="actions no-print">
+                    <a href="triage.html" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Geri Dön
+                    </a>
+                    <a href="../index.html" class="btn btn-primary" id="completeButton">
+                        <i class="fas fa-home"></i> Ana Sayfaya Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // URL'den parametreleri al
+            const params = new URLSearchParams(window.location.search);
+            const level = params.get('level');
+            let diseases = params.get('diseases');
+            let description = params.get('description');
+            
+            if (!level) {
+                window.location.href = 'triage.html';
+                return;
+            }
+            
+            try {
+                diseases = JSON.parse(decodeURIComponent(diseases || '[]'));
+            } catch (e) {
+                console.error('Hastalık verisi çözümlenemedi:', e);
+                diseases = [];
+            }
+            
+            description = decodeURIComponent(description || '');
+            
+            // Bugünün tarihini göster
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('tr-TR', options);
+            
+            // Triaj seviyesi ve başlık
+            const headerArea = document.getElementById('headerArea');
+            const resultTitle = document.getElementById('resultTitle');
+            const urgencyLevel = document.getElementById('urgencyLevel');
+            
+            if (level === 'kirmizi') {
+                headerArea.classList.add('kirmizi-header');
+                resultTitle.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Kırmızı Alan - Acil Müdahale';
+                urgencyLevel.innerHTML = '<i class="fas fa-circle kirmizi-text"></i> <span class="kirmizi-text">Aciliyet Seviyesi: En Yüksek Öncelik</span>';
+                
+                document.getElementById('resultSummary').innerHTML = `
+                    <strong>Durum: Hayati Tehlike!</strong> Triaj değerlendirmeniz sonucunda en yüksek aciliyet seviyesine sahipsiniz. 
+                    Durumunuz hemen müdahale gerektirebilir. Acil servis personeli en kısa sürede sizinle ilgilenecektir.
+                `;
+                
+                document.getElementById('waitTime').textContent = '0-15 dk';
+                document.getElementById('waitTimeDescription').textContent = 'Kırmızı alan hastalarına hemen müdahale edilir.';
+
+                document.getElementById('nextStepsList').innerHTML = `
+                    <li>Acil servis girişinde sağlık personeliyle iletişime geçin.</li>
+                    <li>Acil müdahale alanına hemen alınacaksınız.</li>
+                    <li>Gerekli tüm tetkik ve tedaviler öncelikli olarak uygulanacaktır.</li>
+                    <li>Hasta yakınlarınız bekleme alanında bekleyebilir.</li>
+                `;
+            } else if (level === 'sari') {
+                headerArea.classList.add('sari-header');
+                resultTitle.innerHTML = '<i class="fas fa-exclamation-circle"></i> Sarı Alan - Öncelikli Değerlendirme';
+                urgencyLevel.innerHTML = '<i class="fas fa-circle sari-text"></i> <span class="sari-text">Aciliyet Seviyesi: Yüksek Öncelik</span>';
+                
+                document.getElementById('resultSummary').innerHTML = `
+                    <strong>Durum: Acil!</strong> Triaj değerlendirmeniz sonucunda yüksek öncelikli bir aciliyet seviyesine sahipsiniz. 
+                    Durumunuz yakın takip ve hızlı müdahale gerektirir. Acil servis personeli kısa sürede sizinle ilgilenecektir.
+                `;
+                
+                document.getElementById('waitTime').textContent = '15-30 dk';
+                document.getElementById('waitTimeDescription').textContent = 'Sarı alan hastaları kısa sürede değerlendirilir.';
+
+                document.getElementById('nextStepsList').innerHTML = `
+                    <li>Acil servis kayıt masasına başvurun.</li>
+                    <li>Sarı alan değerlendirme alanında bekleyin.</li>
+                    <li>30 dakika içerisinde doktor tarafından değerlendirileceksiniz.</li>
+                    <li>Şikayetlerinizde artış olursa hemen görevli personele bildirin.</li>
+                `;
+            } else {
+                headerArea.classList.add('yesil-header');
+                resultTitle.innerHTML = '<i class="fas fa-check-circle"></i> Yeşil Alan - Normal Değerlendirme';
+                urgencyLevel.innerHTML = '<i class="fas fa-circle yesil-text"></i> <span class="yesil-text">Aciliyet Seviyesi: Normal Öncelik</span>';
+                
+                document.getElementById('resultSummary').innerHTML = `
+                    <strong>Durum: Stabil</strong> Triaj değerlendirmeniz sonucunda durumunuzun acil olmadığı belirlenmiştir. 
+                    Şikayetleriniz değerlendirilecek ancak hayati tehlike arz eden diğer hastalar önceliklidir.
+                `;
+                
+                document.getElementById('waitTime').textContent = '1-3 saat';
+                document.getElementById('waitTimeDescription').textContent = 'Yeşil alan hastaları sıraya göre değerlendirilir.';
+
+                document.getElementById('nextStepsList').innerHTML = `
+                    <li>Acil servis kayıt masasına başvurun.</li>
+                    <li>Yeşil alan bekleme bölümünde sıranızın gelmesini bekleyin.</li>
+                    <li>Şikayetlerinizde belirgin artış olursa tekrar triaj masasına başvurun.</li>
+                    <li>Doktor değerlendirmeniz sıranıza göre yapılacaktır.</li>
+                `;
+            }
+            
+            // Hastalık listesini göster
+            const diseasesList = document.getElementById('diseasesList');
+            diseasesList.innerHTML = '';
+            
+            if (diseases && diseases.length > 0) {
+                const triageData = {
+                    // Kırmızı Alan Hastalıkları
+                    kalp_krizi: { level: 'kirmizi', name: 'Kalp Krizi', icon: 'fa-heartbeat' },
+                    beyin_kanamasi: { level: 'kirmizi', name: 'Beyin Kanaması', icon: 'fa-brain' },
+                    solunum_yetersizligi: { level: 'kirmizi', name: 'Solunum Yetersizliği', icon: 'fa-lungs' },
+                    inme: { level: 'kirmizi', name: 'İnme / Felç', icon: 'fa-brain' },
+                    ciddi_kafa_travmasi: { level: 'kirmizi', name: 'Ciddi Kafa Travması', icon: 'fa-head-side' },
+                    ates_havale: { level: 'kirmizi', name: 'Ateşli Havale', icon: 'fa-temperature-high' },
+                    elektrik_carpması: { level: 'kirmizi', name: 'Elektrik Çarpması', icon: 'fa-bolt' },
+                    ciddi_zehirlenme: { level: 'kirmizi', name: 'Ciddi Zehirlenme', icon: 'fa-skull-crossbones' },
+                    anafilaksi: { level: 'kirmizi', name: 'Anafilaktik Şok', icon: 'fa-allergies' },
+                    aktif_kanama: { level: 'kirmizi', name: 'Aktif Şiddetli Kanama', icon: 'fa-tint' },
+                    diyabet_komasi: { level: 'kirmizi', name: 'Diyabet Koması', icon: 'fa-pills' },
+                    zehirli_yilan: { level: 'kirmizi', name: 'Zehirli Yılan/Böcek Isırması', icon: 'fa-snake' },
+                    
+                    // Sarı Alan Hastalıkları
+                    yuksek_ates: { level: 'sari', name: 'Yüksek Ateş', icon: 'fa-thermometer-full' },
+                    ciddi_travma: { level: 'sari', name: 'Ciddi Travma', icon: 'fa-bone' },
+                    bayilma: { level: 'sari', name: 'Bayılma', icon: 'fa-dizzy' },
+                    siddetli_agri: { level: 'sari', name: 'Şiddetli Ağrı', icon: 'fa-radiation' },
+                    alerjik_reaksiyon: { level: 'sari', name: 'Alerjik Reaksiyon', icon: 'fa-allergies' },
+                    astim_atak: { level: 'sari', name: 'Astım Atağı', icon: 'fa-lungs' },
+                    derin_kesik: { level: 'sari', name: 'Derin Kesik', icon: 'fa-cut' },
+                    mide_kanamasi: { level: 'sari', name: 'Mide Kanaması', icon: 'fa-tint' },
+                    bobrek_tasi: { level: 'sari', name: 'Böbrek Taşı', icon: 'fa-kidney' },
+                    safra_kesisi: { level: 'sari', name: 'Safra Kesisi Ağrısı', icon: 'fa-weight' },
+                    apandisit: { level: 'sari', name: 'Apandisit Şüphesi', icon: 'fa-stethoscope' },
+                    yanık: { level: 'sari', name: 'Orta Derece Yanık', icon: 'fa-fire' },
+                    epilepsi: { level: 'sari', name: 'Epilepsi Nöbeti', icon: 'fa-bolt' },
+                    panik_atak: { level: 'sari', name: 'Panik Atak', icon: 'fa-heartbeat' },
+                    
+                    // Yeşil Alan Hastalıkları
+                    hafif_travma: { level: 'yesil', name: 'Hafif Travma', icon: 'fa-band-aid' },
+                    grip: { level: 'yesil', name: 'Grip', icon: 'fa-virus' },
+                    bas_agrisi: { level: 'yesil', name: 'Baş Ağrısı', icon: 'fa-head-side-cough' },
+                    hafif_ates: { level: 'yesil', name: 'Hafif Ateş', icon: 'fa-thermometer-half' },
+                    bogaz_agrisi: { level: 'yesil', name: 'Boğaz Ağrısı', icon: 'fa-head-side-cough' },
+                    kulak_agrisi: { level: 'yesil', name: 'Kulak Ağrısı', icon: 'fa-ear' },
+                    ishal: { level: 'yesil', name: 'İshal', icon: 'fa-toilet' },
+                    karin_agrisi: { level: 'yesil', name: 'Hafif Karın Ağrısı', icon: 'fa-stomach' },
+                    kas_agrisi: { level: 'yesil', name: 'Kas Ağrısı', icon: 'fa-walking' },
+                    minör_kesik: { level: 'yesil', name: 'Küçük Kesik/Sıyrık', icon: 'fa-band-aid' },
+                    deri_dokuntu: { level: 'yesil', name: 'Deri Döküntüsü', icon: 'fa-allergies' },
+                    goz_yanmasi: { level: 'yesil', name: 'Göz Yanması/Batması', icon: 'fa-eye' }
+                };
+                
+                diseases.forEach(disease => {
+                    const diseaseInfo = triageData[disease] || { 
+                        level: 'yesil', 
+                        name: document.querySelector(`label[for="${disease}"]`)?.textContent || disease,
+                        icon: 'fa-notes-medical'
+                    };
+                    
+                    const li = document.createElement('li');
+                    li.className = `disease-item ${diseaseInfo.level}-disease`;
+                    li.innerHTML = `<i class="fas ${diseaseInfo.icon}"></i> ${diseaseInfo.name}`;
+                    diseasesList.appendChild(li);
+                });
+            } else {
+                diseasesList.innerHTML = '<p>Hiçbir şikayet seçilmedi.</p>';
+            }
+            
+            // Ek açıklamayı göster
+            const patientDescriptionElement = document.getElementById('patientDescription');
+            if (description && description.trim().length > 0) {
+                patientDescriptionElement.textContent = description;
+            } else {
+                document.getElementById('descriptionBox').style.display = 'none';
+            }
+            
+            // Tamamla butonuna tıklanınca
+            document.getElementById('completeButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '../index.html';
+            });
+        });
+    </script>
+</body>
+</html> 
