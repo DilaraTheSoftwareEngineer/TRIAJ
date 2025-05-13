@@ -10,6 +10,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Sayfa içi linklere tıklandığında yumuşak kaydırma animasyonu
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            if (this.getAttribute('href') !== "#") {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80, // Header yüksekliği için offset
+                        behavior: 'smooth'
+                    });
+                    
+                    // Aktif menü öğesini güncelle
+                    document.querySelectorAll('nav ul li a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            }
+        });
+    });
+
     // Özellik kartları animasyonu
     const featureCards = document.querySelectorAll('.feature-card');
     
@@ -33,5 +58,23 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.transform = 'translateY(20px)';
         card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         observer.observe(card);
+    });
+    
+    // Bölümlerin animasyonu için observer
+    const sectionObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -100px 0px'
+    });
+    
+    // Gözlemlenecek bölümler
+    const sections = document.querySelectorAll('.features, .triage-levels, .cta, footer, .triage-info-text');
+    sections.forEach(section => {
+        sectionObserver.observe(section);
     });
 });
