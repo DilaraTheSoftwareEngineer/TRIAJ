@@ -513,6 +513,21 @@ $is_admin = true;
         function updateDiseaseStatus(id) {
             const newStatus = prompt('Yeni durumu girin (Bekliyor/İnceleniyor/Tamamlandı/İptal):');
             if (newStatus) {
+                // Durum değerini düzenle: Küçük harf yap ve Türkçe karakterleri değiştir
+                let formattedStatus = newStatus.toLowerCase()
+                    .replace('bekliyor', 'bekliyor')
+                    .replace('i̇nceleniyor', 'inceleniyor')
+                    .replace('inceleniyor', 'inceleniyor')
+                    .replace('tamamlandı', 'tamamlandi')
+                    .replace('iptal', 'iptal');
+                    
+                // Geçerli durum değerlerini kontrol et
+                const validStatuses = ['bekliyor', 'inceleniyor', 'tamamlandi', 'iptal'];
+                if (!validStatuses.includes(formattedStatus)) {
+                    alert('Geçersiz durum değeri! Lütfen "Bekliyor", "İnceleniyor", "Tamamlandı" veya "İptal" girin.');
+                    return;
+                }
+                
                 fetch('update_disease.php', {
                     method: 'POST',
                     headers: {
@@ -520,7 +535,7 @@ $is_admin = true;
                     },
                     body: JSON.stringify({
                         id: id,
-                        status: newStatus
+                        status: formattedStatus
                     })
                 })
                 .then(response => response.json())

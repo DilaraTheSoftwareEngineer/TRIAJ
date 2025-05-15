@@ -21,6 +21,14 @@ if (!isset($data['id']) || !isset($data['status'])) {
     exit;
 }
 
+// Durum değeri doğrulama
+$validStatuses = ['bekliyor', 'inceleniyor', 'tamamlandi', 'iptal'];
+if (!in_array($data['status'], $validStatuses)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'error' => 'Geçersiz durum değeri: ' . $data['status']]);
+    exit;
+}
+
 require_once('../../config/db.php');
 
 try {
