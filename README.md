@@ -31,24 +31,6 @@ Hastane Triaj Sistemi, acil servislerdeki hasta yoğunluğunu ve iş yükünü a
 - PHP
 - MySQL
 
-## ⚙️ Kurulum
-
-1. Projeyi bilgisayarınıza klonlayın:
-```bash
-git clone https://github.com/[kullanıcı-adı]/triaj.git
-```
-
-2. XAMPP veya benzeri bir local server kurun
-
-3. Proje dosyalarını `htdocs` klasörüne kopyalayın
-
-4. MySQL veritabanını oluşturun
-
-5. Tarayıcınızdan projeye erişin:
-```
-http://localhost/triaj
-```
-
 ## 👥 Kullanım
 
 1. Ana sayfadan "Giriş Yap" butonuna tıklayın
