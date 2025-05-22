@@ -1,44 +1,73 @@
 # Hastane Triaj Sistemi
 
-Bu proje, hastanelerde acil servislerde kullanılmak üzere tasarlanmış bir triaj ve hasta önceliklendirme sistemidir.
+Bu proje, hastanelerin acil servislerinde hasta önceliklendirme ve yönetimini kolaylaştırmak için tasarlanmış web tabanlı bir triaj sistemidir.
 
-## Kurulum
+## 🏥 Proje Hakkında
 
-1. XAMPP, WAMP veya benzeri bir local web server kurun
-2. Projeyi htdocs veya www klasörüne yerleştirin
-3. Veritabanı kurulumu için `config/setup.php` dosyasını çalıştırın:
-   - Tarayıcınızdan `http://localhost/triajGuncellenmis/config/setup.php` adresine gidin
-   - Bu işlem veritabanını ve gerekli tabloları otomatik olarak oluşturacaktır
+Hastane Triaj Sistemi, acil servislerdeki hasta yoğunluğunu ve iş yükünü azaltmak amacıyla geliştirilmiştir. Sistem, hastaların durumlarını değerlendirerek onları kırmızı, sarı ve yeşil alanlara yönlendirmektedir.
 
-## Varsayılan Kullanıcılar
+## 🚀 Özellikler
 
-### Admin Giriş Bilgileri
-- TC Kimlik: 30534748970
-- Şifre: admin123
+- **Hasta Girişi ve Kayıt**
+  - TC Kimlik numarası ile giriş
+  - Yeni hasta kaydı
+  - Kişisel bilgi yönetimi
 
-## Sistem Özellikleri
+- **Triaj Değerlendirmesi**
+  - Semptom bazlı değerlendirme
+  - Otomatik alan belirleme (Kırmızı, Sarı, Yeşil)
+  - Öncelik sıralaması
 
-- Hasta kayıt ve giriş
-- Hastalık şikayeti ve belirtileri giriş
-- Triaj seviyesi belirleme (Kırmızı, Sarı, Yeşil)
-- Admin paneli ile hasta takibi ve durum güncelleme
-- Raporlama ve istatistikler
+- **Yönetici Paneli**
+  - Hasta takibi
+  - Durum güncellemeleri
+  - Sistem yönetimi
 
-## Kullanım
+## 💻 Teknolojiler
 
-1. Ana sayfaya erişmek için: `http://localhost/triajGuncellenmis/index.html`
-2. Kullanıcı girişi: `http://localhost/triajGuncellenmis/kullanicigiris/login.html`
-3. Admin girişi: `http://localhost/triajGuncellenmis/kullanicigiris/admin-login.php`
+- HTML5
+- CSS3
+- JavaScript
+- PHP
+- MySQL
 
-## Hatalar ve Sorunlar
+## ⚙️ Kurulum
 
-Herhangi bir hata veya sorunla karşılaşırsanız, lütfen aşağıdaki kontrolleri yapın:
+1. Projeyi bilgisayarınıza klonlayın:
+```bash
+git clone https://github.com/[kullanıcı-adı]/triaj.git
+```
 
-1. Veritabanı bağlantısı için `config/db.php` dosyasındaki kimlik bilgilerinin doğru olduğundan emin olun
-2. Veritabanının ve tabloların doğru oluşturulduğunu kontrol edin
-3. PHP ve MySQL'in çalıştığından emin olun
-4. Oturum yönetimi için PHP session'ın çalıştığını kontrol edin
+2. XAMPP veya benzeri bir local server kurun
 
-## Güvenlik
+3. Proje dosyalarını `htdocs` klasörüne kopyalayın
 
-Bu sistem, TC Kimlik numarası doğrulama algoritması içermektedir. Ayrıca, admin şifreleri güvenli bir şekilde hashlenmekte ve veritabanına bu şekilde kaydedilmektedir. 
+4. MySQL veritabanını oluşturun
+
+5. Tarayıcınızdan projeye erişin:
+```
+http://localhost/triaj
+```
+
+## 👥 Kullanım
+
+1. Ana sayfadan "Giriş Yap" butonuna tıklayın
+2. TC Kimlik numaranızla giriş yapın veya yeni kayıt oluşturun
+3. Şikayetlerinizi seçin ve triaj değerlendirmesini alın
+4. Size atanan alana göre yönlendirmeleri takip edin
+
+## 🔒 Güvenlik
+
+- TC Kimlik doğrulama sistemi
+- Güvenli şifreleme
+- Oturum yönetimi
+- Veri güvenliği
+
+## 📝 Lisans
+
+Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
+
+## 📧 İletişim
+
+- E-posta: triajsistemi@gmail.com
+- Konum: Elazığ, Türkiye 
