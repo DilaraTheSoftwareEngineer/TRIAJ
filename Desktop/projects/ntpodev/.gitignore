@@ -1,0 +1,30 @@
+# Visual Studio / C# build outputs
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+*.dll
+*.exe
+*.pdb
+
+# System files
+Thumbs.db
+.DS_Store
+*.log
+
+# Temporary files
+*.tmp
+*.cache
+
+# IDE files
+.vs/
+.vscode/
+*.sln.docstates
+
+# User specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
